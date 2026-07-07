@@ -114,7 +114,7 @@ alert.recipients=admin@clima.com,emergencias@clima.com,meteorologia@clima.com
 2. Levantar la aplicación:
 
    ```bash
-   mvn spring-boot:run
+   ./gradlew bootRun
    ```
 
 3. El servicio arranca solo y empieza a registrar y analizar el clima según los
@@ -135,7 +135,7 @@ Incluí tests unitarios de la lógica principal:
 Para correrlos:
 
 ```bash
-mvn test
+./gradlew test
 ```
 
 ---
@@ -143,6 +143,7 @@ mvn test
 ## Stack
 
 - Java + Spring Boot
+- Gradle (build)
 - Spring Scheduling (`@Scheduled`)
 - Spring Async (`@Async`)
 - Spring Data JPA (persistencia del histórico)
