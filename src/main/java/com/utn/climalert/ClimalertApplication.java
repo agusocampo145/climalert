@@ -7,21 +7,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-
+@EnableScheduling
 @SpringBootApplication
 public class ClimalertApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ClimalertApplication.class, args);
-	}
-
-	@Bean
-	CommandLineRunner testPersistence(WeatherService weatherService) {
-		return args -> {
-			WeatherRecord saved = weatherService.fetchAndSave();
-			System.out.println("✅ Guardado: " + saved);
-		};
 	}
 
 }
