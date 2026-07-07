@@ -20,7 +20,7 @@ public class WeatherScheduler {
 
     private final EmailService emailService;
 
-    @Scheduled(fixedRate = 60_000)  // 5 min = 300.000 ms
+    @Scheduled(fixedRate = 300_000)  // 5 min = 300.000 ms
     public void fetchWeather() {
         try {
             WeatherRecord record = weatherService.fetchAndSave();
@@ -39,6 +39,6 @@ public class WeatherScheduler {
             } else {
                 log.info("Condiciones normales: {}°C, {}%", record.getTemperature(), record.getHumidity());
             }
-        }, () -> log.warn("⚠️ Todavía no hay datos para analizar"));
+        }, () -> log.warn("Todavía no hay datos para analizar"));
     }
 }
