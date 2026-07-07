@@ -2,6 +2,7 @@ package com.utn.climalert.scheduler;
 
 import com.utn.climalert.model.WeatherRecord;
 import com.utn.climalert.service.AlertService;
+import com.utn.climalert.service.EmailService;
 import com.utn.climalert.service.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +18,13 @@ public class WeatherScheduler {
 
     private final AlertService alertService;
 
+    private final EmailService emailService;
+
     @Scheduled(fixedRate = 60_000)  // 5 min = 300.000 ms
     public void fetchWeather() {
         try {
             WeatherRecord record = weatherService.fetchAndSave();
-            log.info("Clima registrado: {}°C, {}% humedad, {}",
-                    record.getTemperature(),
-                    record.getHumidity(),
-                    record.getCondition());
+            log.info("Clima registrado: {}°C, {}% humedad, {}", record.getTemperature(), record.getHumidity(), record.getCondition());
         } catch (Exception e) {
             log.error("Error al consultar/guardar el clima: {}", e.getMessage());
         }
@@ -32,18 +32,13 @@ public class WeatherScheduler {
 
     @Scheduled(fixedRate = 60_000)  // 1 min = 60.000 ms
     public void analyzeWeather() {
-        weatherService.getLatest().ifPresentOrElse(
-                record -> {
-                    if (alertService.isCritical(record)) {
-                        log.warn("¡ALERTA! Condiciones críticas: {}°C, {}%",
-                                record.getTemperature(), record.getHumidity());
-                        // TODO: el envío de correo
-                    } else {
-                        log.info("Condiciones normales: {}°C, {}%",
-                                record.getTemperature(), record.getHumidity());
-                    }
-                },
-                () -> log.warn("⚠️ Todavía no hay datos para analizar")
-        );
+        weatherService.getLatest().ifPresentOrElse(record -> {
+            if (alertService.shouldTriggerAlert(record)) {
+                log.warn("¡ALERTA! Condiciones críticas: {}°C, {}%", record.getTemperature(), record.getHumidity());
+                emailService.sendAlert(record);
+            } else {
+                log.info("Condiciones normales: {}°C, {}%", record.getTemperature(), record.getHumidity());
+            }
+        }, () -> log.warn("⚠️ Todavía no hay datos para analizar"));
     }
 }

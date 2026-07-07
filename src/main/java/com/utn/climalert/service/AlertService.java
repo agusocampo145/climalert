@@ -26,14 +26,14 @@ public class AlertService {
 
         if (critical && !alertActive) {
             alertActive = true;
-            log.warn("🚨 Entrando en estado de ALERTA: {}°C, {}%",
+            log.warn("Entrando en estado de ALERTA: {}°C, {}%",
                     record.getTemperature(), record.getHumidity());
             return true;
         }
 
         if (!critical && alertActive) {
             alertActive = false;
-            log.info("✅ Condiciones normalizadas: {}°C, {}%",
+            log.info("Condiciones normalizadas: {}°C, {}%",
                     record.getTemperature(), record.getHumidity());
         }
 
