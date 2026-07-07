@@ -16,7 +16,6 @@ public class WeatherService {
     private final WeatherApiClient weatherApiClient;
     private final WeatherRecordRepository repository;
 
-    // Consulta la API y guarda el resultado en la BD
     public WeatherRecord fetchAndSave() {
         WeatherResponse response = weatherApiClient.getCurrentWeather();
 
@@ -30,7 +29,6 @@ public class WeatherService {
         return repository.save(record);
     }
 
-    // Devuelve el último dato disponible (para las alertas)
     public Optional<WeatherRecord> getLatest() {
         return repository.findTopByOrderByTimestampDesc();
     }

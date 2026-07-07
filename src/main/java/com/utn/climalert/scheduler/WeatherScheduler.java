@@ -1,6 +1,7 @@
 package com.utn.climalert.scheduler;
 
 import com.utn.climalert.model.WeatherRecord;
+import com.utn.climalert.service.AlertService;
 import com.utn.climalert.service.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,9 @@ public class WeatherScheduler {
 
     private final WeatherService weatherService;
 
-    @Scheduled(fixedRate = 300_000)  // 5 min = 300.000 ms
+    private final AlertService alertService;
+
+    @Scheduled(fixedRate = 60_000)  // 5 min = 300.000 ms
     public void fetchWeather() {
         try {
             WeatherRecord record = weatherService.fetchAndSave();
@@ -31,11 +34,16 @@ public class WeatherScheduler {
     public void analyzeWeather() {
         weatherService.getLatest().ifPresentOrElse(
                 record -> {
-                    log.info("Analizando último registro: {}°C, {}%",
-                            record.getTemperature(), record.getHumidity());
-                    //TODO: lógica de alertas
+                    if (alertService.isCritical(record)) {
+                        log.warn("¡ALERTA! Condiciones críticas: {}°C, {}%",
+                                record.getTemperature(), record.getHumidity());
+                        // TODO: el envío de correo
+                    } else {
+                        log.info("Condiciones normales: {}°C, {}%",
+                                record.getTemperature(), record.getHumidity());
+                    }
                 },
-                () -> log.warn("Todavía no hay datos para analizar")
+                () -> log.warn("⚠️ Todavía no hay datos para analizar")
         );
     }
 }
